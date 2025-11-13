@@ -1,4 +1,6 @@
 spring:
   data:
     mongodb:
-      url: mongodb://localhost:27017/realtime_editor
+      host: localhost
+      port: 27017
+      database: realtime_editor
