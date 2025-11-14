@@ -1,6 +1,9 @@
 package com.realtimeeditor.controller;
 
 import com.realtimeeditor.converter.UserConverter;
+import com.realtimeeditor.domain.User;
+import com.realtimeeditor.dto.UserDto.LoginRequest;
+import com.realtimeeditor.dto.UserDto.LoginResponse;
 import com.realtimeeditor.dto.UserDto.NicknameCheckResponse;
 import com.realtimeeditor.dto.UserDto.SignUpRequest;
 import com.realtimeeditor.service.UserService;
@@ -31,5 +34,11 @@ public class UserController {
     public ResponseEntity<NicknameCheckResponse> nicknameExists(@RequestParam("nickname") String nickname) {
         boolean isNicknameExists = userService.isNicknameExists(nickname);
         return ResponseEntity.ok(UserConverter.toNicknameCheckResponse(isNicknameExists));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        User user = userService.login(request);
+        return ResponseEntity.ok(UserConverter.toLoginResponse(user));
     }
 }

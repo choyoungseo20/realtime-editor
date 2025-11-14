@@ -1,6 +1,7 @@
 package com.realtimeeditor.converter;
 
 import com.realtimeeditor.domain.User;
+import com.realtimeeditor.dto.UserDto.LoginResponse;
 import com.realtimeeditor.dto.UserDto.NicknameCheckResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,5 +30,19 @@ public class UserConverterTest {
         NicknameCheckResponse nicknameCheckResponse = UserConverter.toNicknameCheckResponse(exists);
 
         assertThat(nicknameCheckResponse.isExists()).isEqualTo(exists);
+    }
+
+    @DisplayName("LoginResponse 객체로 변환이 되었는지 확인한다.")
+    @Test
+    void LoginResponse_객체로_변환이_되었는지_확인한다() {
+        User user = User.builder()
+                .id("1111")
+                .nickname("youngseo")
+                .password("encodedPassword")
+                .build();
+
+        LoginResponse loginResponse = UserConverter.toLoginResponse(user);
+
+        assertThat(loginResponse.getUserId()).isEqualTo("1111");
     }
 }

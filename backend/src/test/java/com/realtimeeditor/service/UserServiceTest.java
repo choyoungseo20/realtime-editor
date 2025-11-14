@@ -1,5 +1,7 @@
 package com.realtimeeditor.service;
 
+import com.realtimeeditor.domain.User;
+import com.realtimeeditor.dto.UserDto.LoginRequest;
 import com.realtimeeditor.dto.UserDto.SignUpRequest;
 import com.realtimeeditor.repository.UserRepository;
 import com.realtimeeditor.validator.UserValidator;
@@ -44,9 +46,9 @@ public class UserServiceTest {
         assertThat(exists).isTrue();
     }
 
-    @DisplayName("닉네임이 이미 존재할 경우 예외가 발생한다.")
+    @DisplayName("회원가입 시 닉네임이 이미 존재할 경우 예외가 발생한다.")
     @Test
-    void 닉네임이_이미_존재할_경우_예외가_발생한다() {
+    void 회원가입_시_닉네임이_이미_존재할_경우_예외가_발생한다() {
         SignUpRequest signUpRequest1 = SignUpRequest.builder()
                 .nickname("youngseo")
                 .password("@@112233aa")
@@ -70,5 +72,58 @@ public class UserServiceTest {
         boolean exists = userService.isNicknameExists(nickname);
 
         assertThat(exists).isFalse();
+    }
+
+    @DisplayName("로그인 기능을 확인한다.")
+    @Test
+    void 로그인_기능을_확인한다() {
+        String encodedPassword = passwordEncoder.encode("mypassword");
+
+        User user = User.builder()
+                .nickname("youngseo")
+                .password(encodedPassword)
+                .build();
+        userRepository.save(user);
+
+        LoginRequest loginRequest = LoginRequest.builder()
+                .nickname("youngseo")
+                .password("mypassword")
+                .build();
+        User loginUser = userService.login(loginRequest);
+
+        assertThat(loginUser.getNickname()).isEqualTo(user.getNickname());
+        assertThat(loginUser.getPassword()).isEqualTo(user.getPassword());
+    }
+
+    @DisplayName("로그인 시 비밀번호가 틀릴 경우 예외가 발생한다.")
+    @Test
+    void 로그인_시_비밀번호가_틀릴_경우_예외가_발생한다() {
+        String encodedPassword = passwordEncoder.encode("mypassword");
+
+        User user = User.builder()
+                .nickname("youngseo")
+                .password(encodedPassword)
+                .build();
+        userRepository.save(user);
+
+        LoginRequest loginRequest = LoginRequest.builder()
+                .nickname("youngseo")
+                .password("mypasswor")
+                .build();
+
+        assertThatThrownBy(() -> userService.login(loginRequest))
+                .isInstanceOf(RuntimeException.class);
+    }
+
+    @DisplayName("로그인 시 닉네임이 존재하지 않을 경우 예외가 발생한다.")
+    @Test
+    void 로그인_시_닉네임이_존재하지_않을_경우_예외가_발생한다() {
+        LoginRequest loginRequest = LoginRequest.builder()
+                .nickname("youngseo")
+                .password("mypassword")
+                .build();
+
+        assertThatThrownBy(() -> userService.login(loginRequest))
+                .isInstanceOf(RuntimeException.class);
     }
 }

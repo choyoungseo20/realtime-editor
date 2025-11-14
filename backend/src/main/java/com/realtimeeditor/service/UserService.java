@@ -2,7 +2,9 @@ package com.realtimeeditor.service;
 
 import com.realtimeeditor.converter.UserConverter;
 import com.realtimeeditor.domain.User;
+import com.realtimeeditor.dto.UserDto.LoginRequest;
 import com.realtimeeditor.dto.UserDto.SignUpRequest;
+import com.realtimeeditor.exception.UserExceptionMessage;
 import com.realtimeeditor.repository.UserRepository;
 import com.realtimeeditor.validator.UserValidationMessage;
 import com.realtimeeditor.validator.UserValidator;
@@ -30,9 +32,24 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
+    public User login(LoginRequest loginRequest) {
+        User user = findByNickname(loginRequest.getNickname());
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException(UserExceptionMessage.PASSWORD_MISMATCH);
+        }
+
+        return user;
+    }
+
     private void checkNicknameDuplicate(String nickname) {
         if (userRepository.existsByNickname(nickname)) {
             throw new IllegalArgumentException(UserValidationMessage.NICKNAME_DUPLICATE);
         }
+    }
+
+    private User findByNickname(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new RuntimeException(UserExceptionMessage.USER_NOT_FOUND));
     }
 }

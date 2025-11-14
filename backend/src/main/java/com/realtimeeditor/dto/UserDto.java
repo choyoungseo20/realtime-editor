@@ -17,4 +17,17 @@ public class UserDto {
     public static class NicknameCheckResponse {
         private boolean exists;
     }
+
+    @Getter
+    @Builder
+    public static class LoginRequest {
+        private String nickname;
+        private String password;
+    }
+
+    @Getter
+    @Builder
+    public static class LoginResponse {
+        private String userId;
+    }
 }

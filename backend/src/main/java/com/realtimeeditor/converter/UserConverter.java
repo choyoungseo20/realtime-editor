@@ -1,6 +1,7 @@
 package com.realtimeeditor.converter;
 
 import com.realtimeeditor.domain.User;
+import com.realtimeeditor.dto.UserDto.LoginResponse;
 import com.realtimeeditor.dto.UserDto.NicknameCheckResponse;
 
 public class UserConverter {
@@ -15,6 +16,12 @@ public class UserConverter {
     public static NicknameCheckResponse toNicknameCheckResponse(boolean exists) {
         return NicknameCheckResponse.builder()
                 .exists(exists)
+                .build();
+    }
+
+    public static LoginResponse toLoginResponse(User user) {
+        return LoginResponse.builder()
+                .userId(user.getId())
                 .build();
     }
 }
