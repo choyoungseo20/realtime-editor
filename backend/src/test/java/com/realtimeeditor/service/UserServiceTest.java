@@ -1,6 +1,6 @@
 package com.realtimeeditor.service;
 
-import com.realtimeeditor.dto.UserDto.SignUpDto;
+import com.realtimeeditor.dto.UserDto.SignUpRequest;
 import com.realtimeeditor.repository.UserRepository;
 import com.realtimeeditor.validator.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,11 +33,11 @@ public class UserServiceTest {
     @DisplayName("회원가입 기능을 확인한다.")
     @Test
     void 회원가입_기능을_확인한다() {
-        SignUpDto signUpDto = SignUpDto.builder()
+        SignUpRequest signUpRequest = SignUpRequest.builder()
                 .nickname("youngseo")
                 .password("@@112233aa")
                 .build();
-        userService.signUp(signUpDto);
+        userService.signUp(signUpRequest);
 
         boolean exists = userRepository.existsByNickname("youngseo");
 
@@ -47,18 +47,28 @@ public class UserServiceTest {
     @DisplayName("닉네임이 이미 존재할 경우 예외가 발생한다.")
     @Test
     void 닉네임이_이미_존재할_경우_예외가_발생한다() {
-        SignUpDto signUpDto1 = SignUpDto.builder()
+        SignUpRequest signUpRequest1 = SignUpRequest.builder()
                 .nickname("youngseo")
                 .password("@@112233aa")
                 .build();
-        userService.signUp(signUpDto1);
+        userService.signUp(signUpRequest1);
 
-        SignUpDto signUpDto2 = SignUpDto.builder()
+        SignUpRequest signUpRequest2 = SignUpRequest.builder()
                 .nickname("youngseo")
                 .password("aa112233@@")
                 .build();
 
-        assertThatThrownBy(() -> userService.signUp(signUpDto2))
+        assertThatThrownBy(() -> userService.signUp(signUpRequest2))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("닉네임이 존재하는지 확인한다.")
+    @Test
+    void 닉네임이_존재하는지_확인한다() {
+        String nickname = "youngseo";
+
+        boolean exists = userService.isNicknameExists(nickname);
+
+        assertThat(exists).isFalse();
     }
 }

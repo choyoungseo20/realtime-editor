@@ -7,8 +7,14 @@ public class UserDto {
 
     @Getter
     @Builder
-    public static class SignUpDto {
+    public static class SignUpRequest {
         private String nickname;
         private String password;
+    }
+
+    @Getter
+    @Builder
+    public static class NicknameCheckResponse {
+        private boolean exists;
     }
 }
