@@ -18,12 +18,12 @@ public class LoginInputPanel extends JPanel {
         JPanel loginInputPanel = new JPanel();
         loginInputPanel.setLayout(new GridBagLayout());
 
-        JLabel lblNickname = new JLabel("Nickname: ");
+        JLabel lblNickname = new JLabel("닉네임: ");
         lblNickname.setFont(UIFont.EXPLAIN);
         txtNickname = new JTextField(15);
         txtNickname.setFont(UIFont.INPUT);
 
-        JLabel lblPassword = new JLabel("Password: ");
+        JLabel lblPassword = new JLabel("비밀번호: ");
         lblPassword.setFont(UIFont.EXPLAIN);
         txtPassword = new JPasswordField(15);
         txtPassword.setFont(UIFont.INPUT);
