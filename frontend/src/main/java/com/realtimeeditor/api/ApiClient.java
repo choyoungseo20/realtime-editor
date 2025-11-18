@@ -10,6 +10,10 @@ public class ApiClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
+    public static SignUpApi signUpApi() {
+        return retrofit.create(SignUpApi.class);
+    }
+
     public static LoginApi loginApi() {
         return retrofit.create(LoginApi.class);
     }
