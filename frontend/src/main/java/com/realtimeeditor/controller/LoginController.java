@@ -1,8 +1,10 @@
 package com.realtimeeditor.controller;
 
 import com.realtimeeditor.model.LoginInfo;
+import com.realtimeeditor.service.EditorService;
 import com.realtimeeditor.service.LoginService;
 import com.realtimeeditor.service.SignUpService;
+import com.realtimeeditor.view.EditorView;
 import com.realtimeeditor.view.LoginView;
 import com.realtimeeditor.view.SignUpView;
 import java.awt.event.ActionEvent;
@@ -29,7 +31,10 @@ public class LoginController implements ActionListener {
         if (source == loginView.getSignUpButton()) {
             navigateToSingUp();
         } else if (source == loginView.getLoginButton()) {
-            handleLogin();
+            boolean success = handleLogin();
+            if (success) {
+                navigateToEditor();
+            }
         }
     }
 
@@ -40,7 +45,7 @@ public class LoginController implements ActionListener {
         loginView.dispose();
     }
 
-    private void handleLogin() {
+    private boolean handleLogin() {
         String nickname = loginView.getNickname();
         String password = loginView.getPassword();
 
@@ -52,5 +57,13 @@ public class LoginController implements ActionListener {
         } else {
             JOptionPane.showMessageDialog(loginView, "로그인 실패");
         }
+        return success;
+    }
+
+    private void navigateToEditor() {
+        EditorView editorView = new EditorView();
+        EditorService editorService = new EditorService();
+        EditorController editorController = new EditorController(editorView, editorService);
+        loginView.dispose();
     }
 }

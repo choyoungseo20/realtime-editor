@@ -52,11 +52,10 @@ public class SignUpController implements ActionListener {
         boolean success = signUpService.signUp(signUpInfo);
         if (success) {
             JOptionPane.showMessageDialog(signUpView, "회원가입 성공");
-            return true;
         } else {
             JOptionPane.showMessageDialog(signUpView, "회원가입 실패");
-            return false;
         }
+        return success;
     }
 
     private SignUpInfo getSignUpInfoFromView() {
