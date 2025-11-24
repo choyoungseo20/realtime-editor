@@ -3,7 +3,6 @@ package com.realtimeeditor.controller;
 import com.realtimeeditor.crdt.CrdtEngine;
 import com.realtimeeditor.model.DocumentFile;
 import com.realtimeeditor.model.LoginInfo;
-import com.realtimeeditor.service.EditorService;
 import com.realtimeeditor.service.LoginService;
 import com.realtimeeditor.service.SignUpService;
 import com.realtimeeditor.view.EditorView;

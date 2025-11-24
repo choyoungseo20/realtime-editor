@@ -12,26 +12,11 @@ public class DocumentFile {
     private final Map<String, CrdtElement> elementById = new HashMap<>();
 
     public void insert(CrdtElement crdtElement) {
-        if (elementById.containsKey(crdtElement.getId())) {
-            return;
-        }
+        if (isDuplicate(crdtElement)) return;
 
-        int index = 0;
-        if (crdtElement.getPreviousId() != null) {
-            CrdtElement previousElement = elementById.get(crdtElement.getPreviousId());
-            if (previousElement != null) {
-                index = elements.indexOf(previousElement) + 1;
-            }
-        }
-
-        while (index < elements.size() && elements.get(index).getPreviousId() != null
-                && elements.get(index).getPreviousId().equals(crdtElement.getPreviousId())
-                && elements.get(index).getId().compareTo(crdtElement.getId()) < 0) {
-            index++;
-        }
-
-        elements.add(index, crdtElement);
-        elementById.put(crdtElement.getId(), crdtElement);
+        CrdtElement previous = findPreviousElement(crdtElement);
+        int index = calculateInsertIndex(crdtElement, previous);
+        doInsert(crdtElement, index);
     }
 
     public void delete(String targetId) {
@@ -63,5 +48,32 @@ public class DocumentFile {
             }
         }
         return text.toString();
+    }
+
+    private boolean isDuplicate(CrdtElement element) {
+        return elementById.containsKey(element.getId());
+    }
+
+    private CrdtElement findPreviousElement(CrdtElement element) {
+        if (element.getPreviousId() == null) return null;
+        return elementById.get(element.getPreviousId());
+    }
+
+    private int calculateInsertIndex(CrdtElement element, CrdtElement previousElement) {
+        int index = (previousElement == null) ? 0 : elements.indexOf(previousElement) + 1;
+
+        while (index < elements.size() &&
+                elements.get(index).getPreviousId() != null &&
+                elements.get(index).getPreviousId().equals(element.getPreviousId()) &&
+                elements.get(index).getId().compareTo(element.getId()) < 0) {
+            index++;
+        }
+
+        return index;
+    }
+
+    private void doInsert(CrdtElement element, int index) {
+        elements.add(index, element);
+        elementById.put(element.getId(), element);
     }
 }

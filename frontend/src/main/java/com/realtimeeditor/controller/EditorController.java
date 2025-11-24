@@ -63,39 +63,12 @@ public class EditorController  {
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                if (isLocalChange()) return;
-
-                try {
-                    int offset = e.getOffset();
-                    int length = e.getLength();
-                    String insertText = editorView.textArea.getDocument().getText(offset, length);
-
-                    String previousId = (offset == 0) ? null : crdtEngine.getVisibleElements().get(offset - 1).getId();
-
-                    for (int i = 0; i < insertText.length(); i++) {
-                        char c = insertText.charAt(i);
-                        CrdtOperation operation = crdtEngine.localInsert(previousId, c);
-                        previousId = operation.crdtElement.getId();
-                        WebSocketManager.sendMessage(operation);
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                handleInsert(e);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                if (isLocalChange()) return;
-
-                int offset = e.getOffset();
-                int length = e.getLength();
-
-                List<CrdtElement> toDelete = crdtEngine.getVisibleElements().subList(offset, offset + length);
-
-                for (CrdtElement element : toDelete) {
-                    CrdtOperation operation = crdtEngine.localDelete(element.getId());
-                    WebSocketManager.sendMessage(operation);
-                }
+                handleDelete(e);
             }
 
             @Override
@@ -103,30 +76,66 @@ public class EditorController  {
         });
     }
 
-    private void startAutoTyper() {
-        Timer timer = new javax.swing.Timer(5000, e -> {
-            try {
-                String insertText = "Alice\n";
-                String previousId = crdtEngine.getVisibleElements().getLast().getId();
+    private void handleInsert(DocumentEvent e) {
+        if (isLocalChange()) return;
 
-                for (int i = 0; i < insertText.length(); i++) {
-                    char c = insertText.charAt(i);
-                    CrdtOperation operation = crdtEngine.localInsert(previousId, c);
-                    previousId = operation.crdtElement.getId();
-                    WebSocketManager.sendMessage(operation);
-                }
+        try {
+            int offset = e.getOffset();
+            int length = e.getLength();
+            String insertText = editorView.textArea.getDocument().getText(offset, length);
 
-                try {
-                    setLocalChange(true);
-                    editorView.textArea.setText(crdtEngine.getDocumentFileText());
-                } finally {
-                    setLocalChange(false);
-                }
+            String previousId = (offset == 0) ? null : crdtEngine.getVisibleElements().get(offset - 1).getId();
 
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            for (int i = 0; i < insertText.length(); i++) {
+                char c = insertText.charAt(i);
+                CrdtOperation operation = crdtEngine.localInsert(previousId, c);
+                previousId = operation.crdtElement.getId();
+                WebSocketManager.sendMessage(operation);
             }
-        });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void handleDelete(DocumentEvent e) {
+        if (isLocalChange()) return;
+
+        int offset = e.getOffset();
+        int length = e.getLength();
+
+        List<CrdtElement> toDelete = crdtEngine.getVisibleElements().subList(offset, offset + length);
+
+        for (CrdtElement element : toDelete) {
+            CrdtOperation operation = crdtEngine.localDelete(element.getId());
+            WebSocketManager.sendMessage(operation);
+        }
+    }
+
+    private void startAutoTyper() {
+        Timer timer = new Timer(5000, e -> performAutoInsert("Alice\n"));
         timer.start();
+    }
+
+    private void performAutoInsert(String text) {
+        try {
+            String previousId = crdtEngine.getVisibleElements().getLast().getId();
+
+            for (int i = 0; i < text.length(); i++) {
+                char c = text.charAt(i);
+                CrdtOperation operation = crdtEngine.localInsert(previousId, c);
+                previousId = operation.crdtElement.getId();
+                WebSocketManager.sendMessage(operation);
+            }
+
+            try {
+                setLocalChange(true);
+                editorView.textArea.setText(crdtEngine.getDocumentFileText());
+            } finally {
+                setLocalChange(false);
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
