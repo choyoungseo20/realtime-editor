@@ -1,10 +1,13 @@
 package com.realtimeeditor.controller;
 
+import com.realtimeeditor.crdt.CrdtElement;
 import com.realtimeeditor.crdt.CrdtEngine;
 import com.realtimeeditor.crdt.CrdtOperation;
 import com.realtimeeditor.view.EditorView;
 import com.realtimeeditor.websocket.WebSocketManager;
+import java.util.List;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -67,9 +70,12 @@ public class EditorController  {
                     int length = e.getLength();
                     String insertText = editorView.textArea.getDocument().getText(offset, length);
 
+                    String previousId = (offset == 0) ? null : crdtEngine.getVisibleElements().get(offset - 1).getId();
+
                     for (int i = 0; i < insertText.length(); i++) {
                         char c = insertText.charAt(i);
-                        CrdtOperation operation = crdtEngine.localInsert(offset + i, c);
+                        CrdtOperation operation = crdtEngine.localInsert(previousId, c);
+                        previousId = operation.crdtElement.getId();
                         WebSocketManager.sendMessage(operation);
                     }
                 } catch (Exception ex) {
@@ -84,8 +90,10 @@ public class EditorController  {
                 int offset = e.getOffset();
                 int length = e.getLength();
 
-                for (int i = 0; i < length; i++) {
-                    CrdtOperation operation = crdtEngine.localDelete(offset + i);
+                List<CrdtElement> toDelete = crdtEngine.getVisibleElements().subList(offset, offset + length);
+
+                for (CrdtElement element : toDelete) {
+                    CrdtOperation operation = crdtEngine.localDelete(element.getId());
                     WebSocketManager.sendMessage(operation);
                 }
             }
@@ -96,13 +104,15 @@ public class EditorController  {
     }
 
     private void startAutoTyper() {
-        javax.swing.Timer timer = new javax.swing.Timer(5000, e -> {
+        Timer timer = new javax.swing.Timer(5000, e -> {
             try {
                 String insertText = "Alice\n";
+                String previousId = crdtEngine.getVisibleElements().getLast().getId();
 
                 for (int i = 0; i < insertText.length(); i++) {
                     char c = insertText.charAt(i);
-                    CrdtOperation operation = crdtEngine.localInsert(i, c);
+                    CrdtOperation operation = crdtEngine.localInsert(previousId, c);
+                    previousId = operation.crdtElement.getId();
                     WebSocketManager.sendMessage(operation);
                 }
 

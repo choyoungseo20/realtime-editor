@@ -2,21 +2,19 @@ package com.realtimeeditor.crdt;
 
 public class CrdtElement {
 
-    private final String userId;
-    private final long counter;
+    private final String id;
     private final char value;
     private final String previousId;
     private boolean deleted = false;
 
-    public CrdtElement(String userId, long counter, char value, String previousId) {
-        this.userId = userId;
-        this.counter = counter;
+    public CrdtElement(String id, char value, String previousId) {
+        this.id = id;
         this.value = value;
         this.previousId = previousId;
     }
 
     public String getId() {
-        return userId + "-" + counter;
+        return id;
     }
 
     public char getValue() {

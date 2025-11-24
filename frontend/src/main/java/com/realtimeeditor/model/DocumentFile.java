@@ -12,14 +12,24 @@ public class DocumentFile {
     private final Map<String, CrdtElement> elementById = new HashMap<>();
 
     public void insert(CrdtElement crdtElement) {
-        if (elementById.containsKey(crdtElement.getId())) return;
-        CrdtElement previousElement = elementById.get(crdtElement.getPreviousId());
-        int index;
-        if (previousElement == null) {
-            index = 0;
-        } else {
-            index = elements.indexOf(previousElement) + 1;
+        if (elementById.containsKey(crdtElement.getId())) {
+            return;
         }
+
+        int index = 0;
+        if (crdtElement.getPreviousId() != null) {
+            CrdtElement previousElement = elementById.get(crdtElement.getPreviousId());
+            if (previousElement != null) {
+                index = elements.indexOf(previousElement) + 1;
+            }
+        }
+
+        while (index < elements.size() && elements.get(index).getPreviousId() != null
+                && elements.get(index).getPreviousId().equals(crdtElement.getPreviousId())
+                && elements.get(index).getId().compareTo(crdtElement.getId()) < 0) {
+            index++;
+        }
+
         elements.add(index, crdtElement);
         elementById.put(crdtElement.getId(), crdtElement);
     }
@@ -29,6 +39,12 @@ public class DocumentFile {
         if (crdtElement != null) {
             crdtElement.makeDeleted();
         }
+    }
+
+    public List<CrdtElement> getVisibleElements() {
+        return elements.stream()
+                .filter(element -> !element.isDeleted())
+                .toList();
     }
 
     public CrdtElement getElement(int index) {
