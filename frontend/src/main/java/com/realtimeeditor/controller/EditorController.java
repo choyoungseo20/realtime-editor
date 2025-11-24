@@ -85,7 +85,7 @@ public class EditorController  {
                 int length = e.getLength();
 
                 for (int i = 0; i < length; i++) {
-                    CrdtOperation operation = crdtEngine.localDelete(offset);
+                    CrdtOperation operation = crdtEngine.localDelete(offset + i);
                     WebSocketManager.sendMessage(operation);
                 }
             }
@@ -98,7 +98,7 @@ public class EditorController  {
     private void startAutoTyper() {
         javax.swing.Timer timer = new javax.swing.Timer(5000, e -> {
             try {
-                String insertText = "Alice";
+                String insertText = "Alice\n";
 
                 for (int i = 0; i < insertText.length(); i++) {
                     char c = insertText.charAt(i);
