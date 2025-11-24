@@ -9,9 +9,11 @@ public class WebSocketManager {
 
     private static final Gson gson = new Gson();
     private static EditorWebSocketClient webSocketClient;
+    private static EditorController editorController;
 
     public static void connect(EditorController controller) throws Exception {
         if (webSocketClient == null) {
+            editorController = controller;
             webSocketClient = new EditorWebSocketClient(new URI("ws://localhost:8080/ws"));
             webSocketClient.connect();
         }
@@ -26,6 +28,8 @@ public class WebSocketManager {
 
     public static void handleReceiveMessage(String message) {
         if (isConnected()) {
+            CrdtOperation operation = gson.fromJson(message, CrdtOperation.class);
+            editorController.applyRemoteOperation(operation);
         }
     }
 
