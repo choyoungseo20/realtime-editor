@@ -6,6 +6,7 @@ public class CrdtElement {
     private final long counter;
     private final char value;
     private final String previousId;
+    private boolean deleted = false;
 
     public CrdtElement(String userId, long counter, char value, String previousId) {
         this.userId = userId;
@@ -24,5 +25,13 @@ public class CrdtElement {
 
     public String getPreviousId() {
         return previousId;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void makeDeleted() {
+        this.deleted = true;
     }
 }

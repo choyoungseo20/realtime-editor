@@ -25,9 +25,9 @@ public class DocumentFile {
     }
 
     public void delete(String targetId) {
-        CrdtElement crdtElement = elementById.remove(targetId);
+        CrdtElement crdtElement = elementById.get(targetId);
         if (crdtElement != null) {
-            elements.remove(crdtElement);
+            crdtElement.makeDeleted();
         }
     }
 
@@ -42,7 +42,9 @@ public class DocumentFile {
     public String getText() {
         StringBuilder text = new StringBuilder();
         for (CrdtElement element : elements) {
-            text.append(element.getValue());
+            if (!element.isDeleted()) {
+                text.append(element.getValue());
+            }
         }
         return text.toString();
     }
