@@ -1,5 +1,7 @@
 package com.realtimeeditor.controller;
 
+import com.realtimeeditor.crdt.CrdtEngine;
+import com.realtimeeditor.model.DocumentFile;
 import com.realtimeeditor.model.LoginInfo;
 import com.realtimeeditor.service.EditorService;
 import com.realtimeeditor.service.LoginService;
@@ -62,8 +64,9 @@ public class LoginController implements ActionListener {
 
     private void navigateToEditor() {
         EditorView editorView = new EditorView();
-        EditorService editorService = new EditorService();
-        EditorController editorController = new EditorController(editorView, editorService);
+        DocumentFile documentFile = new DocumentFile();
+        CrdtEngine crdtEngine = new CrdtEngine(documentFile);
+        EditorController editorController = new EditorController(editorView, crdtEngine);
         loginView.dispose();
     }
 }
