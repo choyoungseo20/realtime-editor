@@ -3,17 +3,16 @@ package com.realtimeeditor.crdt;
 public class CrdtOperation {
 
     public CrdtType crdtType;
-    public int index;
-    public char value;
+    public CrdtElement crdtElement;
+    public String targetId;
 
-    public CrdtOperation(CrdtType crdtType, int index, char value) {
-        this.crdtType = crdtType;
-        this.index = index;
-        this.value = value;
+    public CrdtOperation(CrdtElement crdtElement) {
+        this.crdtType = CrdtType.INSERT;
+        this.crdtElement = crdtElement;
     }
 
-    public CrdtOperation(CrdtType crdtType, int index) {
-        this.crdtType = crdtType;
-        this.index = index;
+    public CrdtOperation(String targetId) {
+        this.crdtType = CrdtType.DELETE;
+        this.targetId = targetId;
     }
 }
