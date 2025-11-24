@@ -21,6 +21,7 @@ public class EditorController  {
 
         connectWebSocket();
         handleLocalInput();
+        startAutoTyper();
 
         editorView.setVisible(true);
     }
@@ -92,5 +93,30 @@ public class EditorController  {
             @Override
             public void changedUpdate(DocumentEvent e) {}
         });
+    }
+
+    private void startAutoTyper() {
+        javax.swing.Timer timer = new javax.swing.Timer(5000, e -> {
+            try {
+                String insertText = "Alice";
+
+                for (int i = 0; i < insertText.length(); i++) {
+                    char c = insertText.charAt(i);
+                    CrdtOperation operation = crdtEngine.localInsert(i, c);
+                    WebSocketManager.sendMessage(operation);
+                }
+
+                try {
+                    setLocalChange(true);
+                    editorView.textArea.setText(crdtEngine.getDocumentFileText());
+                } finally {
+                    setLocalChange(false);
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        timer.start();
     }
 }
